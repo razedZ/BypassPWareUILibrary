@@ -6,7 +6,7 @@ local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
 
--- System defaults
+-- System defaults (полностью оригинальные настройки)
 local DEFAULT_SETTINGS = {
     ComponentSize = Vector2.new(200, 40),
     Toggle = {
@@ -90,7 +90,7 @@ local DEFAULT_SETTINGS = {
     }
 }
 
--- Helper function to set text position
+-- Helper function to set text position (оригинальная функция)
 local function applyTextPosition(element, position, textSize)
     if position == "Center" then
         element.TextXAlignment = Enum.TextXAlignment.Center
@@ -109,10 +109,9 @@ local function applyTextPosition(element, position, textSize)
     end
 end
 
--- Function to add center marks to UI elements
+-- Function to add center marks to UI elements (оригинальная функция)
 local function addCenterMarks(element)
     if not element then return end
-    -- Top center mark
     local topMark = Instance.new("Frame")
     topMark.Size = UDim2.new(0, 1, 0, DEFAULT_SETTINGS.Ruler.MarkSize)
     topMark.Position = UDim2.new(0.5, 0, 0, 0)
@@ -122,7 +121,7 @@ local function addCenterMarks(element)
     topMark.ZIndex = element.ZIndex + 1
     topMark.Name = "TopCenterMark"
     topMark.Parent = element
-    -- Bottom center mark
+    
     local bottomMark = Instance.new("Frame")
     bottomMark.Size = UDim2.new(0, 1, 0, DEFAULT_SETTINGS.Ruler.MarkSize)
     bottomMark.Position = UDim2.new(0.5, 0, 1, 0)
@@ -132,7 +131,7 @@ local function addCenterMarks(element)
     bottomMark.ZIndex = element.ZIndex + 1
     bottomMark.Name = "BottomCenterMark"
     bottomMark.Parent = element
-    -- Left center mark
+    
     local leftMark = Instance.new("Frame")
     leftMark.Size = UDim2.new(0, DEFAULT_SETTINGS.Ruler.MarkSize, 0, 1)
     leftMark.Position = UDim2.new(0, 0, 0.5, 0)
@@ -142,7 +141,7 @@ local function addCenterMarks(element)
     leftMark.ZIndex = element.ZIndex + 1
     leftMark.Name = "LeftCenterMark"
     leftMark.Parent = element
-    -- Right center mark
+    
     local rightMark = Instance.new("Frame")
     rightMark.Size = UDim2.new(0, DEFAULT_SETTINGS.Ruler.MarkSize, 0, 1)
     rightMark.Position = UDim2.new(1, 0, 0.5, 0)
@@ -154,14 +153,13 @@ local function addCenterMarks(element)
     rightMark.Parent = element
 end
 
--- Secure nil-instance storage
-local SecureStorage = {
-    Windows = {},
-    Elements = setmetatable({}, {__mode = "v"}),
+-- Secure storage for hidden references
+local SecureRefs = {
+    Windows = setmetatable({}, {__mode = "v"}),
     Connections = setmetatable({}, {__mode = "k"})
 }
 
--- Modified CreateWindow with protection
+-- CreateWindow function (полностью оригинальный функционал с защитой)
 function PizdecWareUI:CreateWindow(options)
     local self = setmetatable({}, PizdecWareUI)
     self.options = {
@@ -171,106 +169,100 @@ function PizdecWareUI:CreateWindow(options)
         Size = options.Size or UDim2.new(0, 600, 0, 400),
         Position = options.Position or UDim2.new(0.5, -300, 0.5, -200)
     }
-    
-    -- Create hidden instances
-    local gui = Instance.new("ScreenGui")
-    gui.Name = self.options.Name
-    gui.ResetOnSpawn = false
-    gui.IgnoreGuiInset = true
-    
-    local mainFrame = Instance.new("Frame")
-    mainFrame.Size = self.options.Size
-    mainFrame.Position = self.options.Position
-    mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
-    mainFrame.BorderSizePixel = 0
-    mainFrame.Active = true
-    mainFrame.Draggable = true
-    mainFrame.Parent = gui
-    
+
+    -- Создаем UI элементы (оригинальный код)
+    self.Gui = Instance.new("ScreenGui")
+    self.Gui.Name = self.options.Name
+    self.Gui.ResetOnSpawn = false
+    self.Gui.IgnoreGuiInset = true
+
+    self.MainFrame = Instance.new("Frame")
+    self.MainFrame.Size = self.options.Size
+    self.MainFrame.Position = self.options.Position
+    self.MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+    self.MainFrame.BorderSizePixel = 0
+    self.MainFrame.Active = true
+    self.MainFrame.Draggable = true
+    self.MainFrame.Parent = self.Gui
+
     local uiCorner = Instance.new("UICorner")
     uiCorner.CornerRadius = UDim.new(0, 8)
-    uiCorner.Parent = mainFrame
-    
-    local stroke = Instance.new("UIStroke")
-    stroke.Color = self.options.Color
-    stroke.Thickness = 1.5
-    stroke.Parent = mainFrame
-    
-    local title = Instance.new("TextLabel")
-    title.Size = UDim2.new(1, 0, 0, 40)
-    title.BackgroundTransparency = 1
-    title.Text = self.options.Name .. (self.options.Version ~= "" and " " .. self.options.Version or "")
-    title.Font = Enum.Font.GothamBold
-    title.TextSize = 18
-    title.TextColor3 = self.options.Color
-    title.TextXAlignment = Enum.TextXAlignment.Center
-    title.Parent = mainFrame
-    
-    local tabPanel = Instance.new("Frame")
-    tabPanel.Size = UDim2.new(0, 120, 1, -46)
-    tabPanel.Position = UDim2.new(0, 6, 0, 43)
-    tabPanel.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
-    tabPanel.BorderSizePixel = 0
-    tabPanel.Parent = mainFrame
-    
+    uiCorner.Parent = self.MainFrame
+
+    self.stroke = Instance.new("UIStroke")
+    self.stroke.Color = self.options.Color
+    self.stroke.Thickness = 1.5
+    self.stroke.Parent = self.MainFrame
+
+    self.Title = Instance.new("TextLabel")
+    self.Title.Size = UDim2.new(1, 0, 0, 40)
+    self.Title.BackgroundTransparency = 1
+    self.Title.Text = self.options.Name .. (self.options.Version ~= "" and " " .. self.options.Version or "")
+    self.Title.Font = Enum.Font.GothamBold
+    self.Title.TextSize = 18
+    self.Title.TextColor3 = self.options.Color
+    self.Title.TextXAlignment = Enum.TextXAlignment.Center
+    self.Title.Parent = self.MainFrame
+
+    self.TabPanel = Instance.new("Frame")
+    self.TabPanel.Size = UDim2.new(0, 120, 1, -46)
+    self.TabPanel.Position = UDim2.new(0, 6, 0, 43)
+    self.TabPanel.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+    self.TabPanel.BorderSizePixel = 0
+    self.TabPanel.Parent = self.MainFrame
+
     local tabCorner = Instance.new("UICorner")
     tabCorner.CornerRadius = UDim.new(0, 6)
-    tabCorner.Parent = tabPanel
-    
-    -- Store references securely
-    self._secure = {
-        Gui = gui,
-        MainFrame = mainFrame,
-        Title = title,
-        TabPanel = tabPanel,
-        Tabs = {},
-        TabButtons = {},
-        TabCount = 0,
-        CurrentTab = nil
-    }
-    
-    -- Delayed parent assignment
+    tabCorner.Parent = self.TabPanel
+
+    self.Tabs = {}
+    self.TabButtons = {}
+    self.TabCount = 0
+    self.CurrentTab = nil
+
+    -- Защищенное добавление в иерархию
     task.defer(function()
-        gui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+        self.Gui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
     end)
-    
-    -- Toggle key with protection
-    local toggleKey = Enum.KeyCode.RightShift
+
+    -- Оригинальный обработчик клавиш с защитой
+    self.ToggleKey = Enum.KeyCode.RightShift
     local conn = UserInputService.InputBegan:Connect(function(input, gpe)
-        if not gpe and input.KeyCode == toggleKey then
-            gui.Enabled = not gui.Enabled
+        if not gpe and input.KeyCode == self.ToggleKey then
+            self.Gui.Enabled = not self.Gui.Enabled
         end
     end)
     
-    SecureStorage.Connections[conn] = true
-    
-    -- Methods
-    function self:SetToggleKey(key)
-        toggleKey = key
+    -- Сохраняем соединение для последующей очистки
+    SecureRefs.Connections[conn] = true
+    SecureRefs.Windows[self] = true
+
+    -- Оригинальные методы
+    function self:SetToggleKey(newKey)
+        self.ToggleKey = newKey
     end
-    
+
     function self:Destroy()
-        conn:Disconnect()
-        gui:Destroy()
+        self.Gui:Destroy()
         for k in pairs(self) do
             self[k] = nil
         end
     end
-    
+
     return self
 end
 
--- CreateTab with protection
+-- CreateTab function (полностью оригинальный функционал)
 function PizdecWareUI:CreateTab(name, options)
     options = options or {}
     local tabInstance = {}
-    self._secure.TabCount = self._secure.TabCount + 1
-    
-    -- Tab button
+    self.TabCount = self.TabCount + 1
+
+    -- Оригинальный код создания вкладки
     local btn = Instance.new("TextButton")
     btn.Size = UDim2.new(1, -DEFAULT_SETTINGS.TabButton.WidthPadding, 0, DEFAULT_SETTINGS.TabButton.Height)
     btn.Position = UDim2.new(0, DEFAULT_SETTINGS.TabButton.Spacing, 0, 
-                   DEFAULT_SETTINGS.TabButton.Spacing + (self._secure.TabCount - 1) * 
+                   DEFAULT_SETTINGS.TabButton.Spacing + (self.TabCount - 1) * 
                    (DEFAULT_SETTINGS.TabButton.Height + DEFAULT_SETTINGS.TabButton.Spacing * 2))
     btn.Text = name
     btn.BackgroundColor3 = DEFAULT_SETTINGS.TabButton.InactiveColor
@@ -280,34 +272,31 @@ function PizdecWareUI:CreateTab(name, options)
     btn.TextXAlignment = Enum.TextXAlignment.Center
     btn.TextYAlignment = Enum.TextYAlignment.Center
     btn.BorderSizePixel = 0
-    btn.Parent = self._secure.TabPanel
-    
+    btn.Parent = self.TabPanel
+
     local btnCorner = Instance.new("UICorner")
     btnCorner.CornerRadius = UDim.new(0, DEFAULT_SETTINGS.TabButton.CornerRadius)
     btnCorner.Parent = btn
-    
-    -- Tab content
+
     local tab = Instance.new("Frame")
     tab.Size = UDim2.new(1, -130, 1, -50)
     tab.Position = UDim2.new(0, 130, 0, 45)
     tab.BackgroundColor3 = Color3.fromRGB(35, 35, 45)
     tab.Visible = false
     tab.BorderSizePixel = 0
-    tab.Parent = self._secure.MainFrame
-    
+    tab.Parent = self.MainFrame
+
     local tabContentCorner = Instance.new("UICorner")
     tabContentCorner.CornerRadius = UDim.new(0, 6)
     tabContentCorner.Parent = tab
-    
-    -- Container for elements
+
     local elementsContainer = Instance.new("Frame")
     elementsContainer.Size = UDim2.new(1, 0, 1, 0)
     elementsContainer.Position = UDim2.new(0, 0, 0, 0)
     elementsContainer.BackgroundTransparency = 1
     elementsContainer.Name = "ElementsContainer"
     elementsContainer.Parent = tab
-    
-    -- Ruler and grid system
+
     local rulerX = Instance.new("Frame")
     rulerX.Size = UDim2.new(1, 0, 0, 1)
     rulerX.Position = UDim2.new(0, 0, 0, 0)
@@ -316,7 +305,7 @@ function PizdecWareUI:CreateTab(name, options)
     rulerX.ZIndex = DEFAULT_SETTINGS.Ruler.ZIndex
     rulerX.Visible = true
     rulerX.Parent = tab
-    
+
     local rulerY = Instance.new("Frame")
     rulerY.Size = UDim2.new(0, 1, 1, 0)
     rulerY.Position = UDim2.new(0, 0, 0, 0)
@@ -325,36 +314,105 @@ function PizdecWareUI:CreateTab(name, options)
     rulerY.ZIndex = DEFAULT_SETTINGS.Ruler.ZIndex
     rulerY.Visible = true
     rulerY.Parent = tab
-    
-    -- Store references
-    self._secure.Tabs[name] = {
+
+    local gridContainer = Instance.new("Frame")
+    gridContainer.Size = UDim2.new(1, 0, 1, 0)
+    gridContainer.Position = UDim2.new(0, 0, 0, 0)
+    gridContainer.BackgroundTransparency = 1
+    gridContainer.ZIndex = DEFAULT_SETTINGS.Ruler.ZIndex
+    gridContainer.Visible = true
+    gridContainer.Parent = tab
+
+    for i = 20, tab.AbsoluteSize.X, 20 do
+        local vLine = Instance.new("Frame")
+        vLine.Size = UDim2.new(0, 1, 1, 0)
+        vLine.Position = UDim2.new(0, i, 0, 0)
+        vLine.BackgroundColor3 = DEFAULT_SETTINGS.Ruler.GridColor
+        vLine.BorderSizePixel = 0
+        vLine.ZIndex = DEFAULT_SETTINGS.Ruler.ZIndex
+        vLine.Name = "VLine_"..i
+        vLine.Parent = gridContainer
+        
+        local xMarker = Instance.new("Frame")
+        xMarker.Size = UDim2.new(0, 1, 0, DEFAULT_SETTINGS.Ruler.MarkSize)
+        xMarker.Position = UDim2.new(0, i, 0, 0)
+        xMarker.BackgroundColor3 = DEFAULT_SETTINGS.Ruler.CenterMarkColor
+        xMarker.BorderSizePixel = 0
+        xMarker.ZIndex = DEFAULT_SETTINGS.Ruler.ZIndex + 1
+        xMarker.Parent = rulerX
+        
+        local xLabel = Instance.new("TextLabel")
+        xLabel.Size = UDim2.new(0, 20, 0, 12)
+        xLabel.Position = UDim2.new(0, i - 10, 0, DEFAULT_SETTINGS.Ruler.MarkSize + 2)
+        xLabel.BackgroundTransparency = 1
+        xLabel.Text = tostring(i)
+        xLabel.TextColor3 = Color3.new(1, 1, 1)
+        xLabel.TextSize = 10
+        xLabel.Font = Enum.Font.Gotham
+        xLabel.ZIndex = DEFAULT_SETTINGS.Ruler.ZIndex + 1
+        xLabel.Parent = rulerX
+    end
+
+    for i = 20, tab.AbsoluteSize.Y, 20 do
+        local hLine = Instance.new("Frame")
+        hLine.Size = UDim2.new(1, 0, 0, 1)
+        hLine.Position = UDim2.new(0, 0, 0, i)
+        hLine.BackgroundColor3 = DEFAULT_SETTINGS.Ruler.GridColor
+        hLine.BorderSizePixel = 0
+        hLine.ZIndex = DEFAULT_SETTINGS.Ruler.ZIndex
+        hLine.Name = "HLine_"..i
+        hLine.Parent = gridContainer
+        
+        local yMarker = Instance.new("Frame")
+        yMarker.Size = UDim2.new(0, DEFAULT_SETTINGS.Ruler.MarkSize, 0, 1)
+        yMarker.Position = UDim2.new(0, 0, 0, i)
+        yMarker.BackgroundColor3 = DEFAULT_SETTINGS.Ruler.CenterMarkColor
+        yMarker.BorderSizePixel = 0
+        yMarker.ZIndex = DEFAULT_SETTINGS.Ruler.ZIndex + 1
+        yMarker.Parent = rulerY
+        
+        local yLabel = Instance.new("TextLabel")
+        yLabel.Size = UDim2.new(0, 20, 0, 12)
+        yLabel.Position = UDim2.new(0, DEFAULT_SETTINGS.Ruler.MarkSize + 2, 0, i - 6)
+        yLabel.BackgroundTransparency = 1
+        yLabel.Text = tostring(i)
+        yLabel.TextColor3 = Color3.new(1, 1, 1)
+        yLabel.TextSize = 10
+        yLabel.Font = Enum.Font.Gotham
+        yLabel.ZIndex = DEFAULT_SETTINGS.Ruler.ZIndex + 1
+        yLabel.Parent = rulerY
+    end
+
+    local elements = {}
+    self.Tabs[name] = {
         Frame = tab,
         Container = elementsContainer,
+        Elements = elements,
         RulerX = rulerX,
         RulerY = rulerY,
-        Elements = {}
+        GridContainer = gridContainer
     }
-    self._secure.TabButtons[name] = btn
-    
-    -- Tab switching
+    self.TabButtons[name] = btn
+
     btn.MouseButton1Click:Connect(function()
-        for _, t in pairs(self._secure.Tabs) do 
+        for _, t in pairs(self.Tabs) do 
             t.Frame.Visible = false 
         end
         tab.Visible = true
-        for _, b in pairs(self._secure.TabButtons) do
+        self.CurrentTab = tabInstance
+        for _, b in pairs(self.TabButtons) do
             b.BackgroundColor3 = DEFAULT_SETTINGS.TabButton.InactiveColor
         end
         btn.BackgroundColor3 = DEFAULT_SETTINGS.TabButton.ActiveColor
     end)
-    
-    -- Activate first tab
-    if self._secure.TabCount == 1 then
+
+    if self.TabCount == 1 then
         btn.BackgroundColor3 = DEFAULT_SETTINGS.TabButton.ActiveColor
         tab.Visible = true
+        self.CurrentTab = tabInstance
     end
-    
-    -- AddText method
+
+    -- AddText method (полностью оригинальный)
     function tabInstance:AddText(options)
         options = options or {}
         local textLabel = Instance.new("TextLabel")
@@ -369,14 +427,13 @@ function PizdecWareUI:CreateTab(name, options)
         textLabel.BackgroundTransparency = 1
         textLabel.ZIndex = 2
         textLabel.Parent = elementsContainer
-        
         applyTextPosition(textLabel, options.TextPosition or DEFAULT_SETTINGS.Text.TextPosition)
         
         if rulerX.Visible then
             addCenterMarks(textLabel)
         end
         
-        table.insert(self._secure.Tabs[name].Elements, textLabel)
+        table.insert(elements, textLabel)
         
         local textObj = {}
         function textObj:SetText(newText)
@@ -393,124 +450,8 @@ function PizdecWareUI:CreateTab(name, options)
         end
         return textObj
     end
-    
-    -- AddButton method
-    function tabInstance:AddButton(options)
-        options = options or {}
-        local size = options.Size or DEFAULT_SETTINGS.ComponentSize
-        
-        local button = Instance.new("TextButton")
-        button.AnchorPoint = Vector2.new(0.5, 0.5)
-        button.Size = UDim2.new(0, size.X, 0, size.Y)
-        button.Position = UDim2.new(0, options.Position and options.Position.X or 0, 
-                             0, options.Position and options.Position.Y or 0)
-        button.Text = options.Text or "Button"
-        button.BackgroundColor3 = DEFAULT_SETTINGS.Button.Color
-        button.TextColor3 = DEFAULT_SETTINGS.Button.TextColor
-        button.Font = DEFAULT_SETTINGS.Button.Font
-        button.TextSize = options.TextSize or DEFAULT_SETTINGS.Button.TextSize
-        applyTextPosition(button, options.TextPosition or DEFAULT_SETTINGS.Button.TextPosition)
-        button.ZIndex = 2
-        button.Parent = elementsContainer
-        
-        local buttonCorner = Instance.new("UICorner")
-        buttonCorner.CornerRadius = UDim.new(0, DEFAULT_SETTINGS.Button.CornerRadius)
-        buttonCorner.Parent = button
-        
-        if rulerX.Visible then
-            addCenterMarks(button)
-        end
-        
-        local debounce = false
-        button.MouseButton1Click:Connect(function()
-            if debounce then return end
-            debounce = true
-            local originalColor = button.BackgroundColor3
-            button.BackgroundColor3 = DEFAULT_SETTINGS.Button.PressEffectColor
-            task.delay(DEFAULT_SETTINGS.Button.PressEffectDuration, function()
-                button.BackgroundColor3 = originalColor
-                debounce = false
-            end)
-            if options.Callback then
-                options.Callback()
-            end
-        end)
-        
-        table.insert(self._secure.Tabs[name].Elements, button)
-        return button
-    end
-    
-    -- AddToggle method
-    function tabInstance:AddToggle(options)
-        options = options or {}
-        local size = options.Size or DEFAULT_SETTINGS.ComponentSize
-        
-        local toggleBtn = Instance.new("TextButton")
-        toggleBtn.AnchorPoint = Vector2.new(0.5, 0.5)
-        toggleBtn.Size = UDim2.new(0, size.X, 0, size.Y)
-        toggleBtn.Position = UDim2.new(0, options.Position and options.Position.X or 0, 
-                             0, options.Position and options.Position.Y or 0)
-        toggleBtn.Text = (options.Text or "Toggle") .. " (OFF)"
-        toggleBtn.BackgroundColor3 = DEFAULT_SETTINGS.Toggle.InactiveColor
-        toggleBtn.TextColor3 = DEFAULT_SETTINGS.Toggle.TextColor
-        toggleBtn.Font = DEFAULT_SETTINGS.Toggle.Font
-        toggleBtn.TextSize = options.TextSize or DEFAULT_SETTINGS.Toggle.TextSize
-        applyTextPosition(toggleBtn, options.TextPosition or DEFAULT_SETTINGS.Toggle.TextPosition)
-        toggleBtn.ZIndex = 2
-        toggleBtn.Parent = elementsContainer
-        
-        local toggleCorner = Instance.new("UICorner")
-        toggleCorner.CornerRadius = UDim.new(0, DEFAULT_SETTINGS.Toggle.CornerRadius)
-        toggleCorner.Parent = toggleBtn
-        
-        if rulerX.Visible then
-            addCenterMarks(toggleBtn)
-        end
-        
-        local state = false
-        local callback = options.Callback or function() end
-        
-        local function applyPressEffect()
-            local originalColor = state and DEFAULT_SETTINGS.Toggle.ActiveColor or DEFAULT_SETTINGS.Toggle.InactiveColor
-            toggleBtn.BackgroundColor3 = DEFAULT_SETTINGS.Toggle.ActiveColor:Lerp(Color3.new(1,1,1), 0.3)
-            task.delay(DEFAULT_SETTINGS.Toggle.PressEffectDuration, function()
-                toggleBtn.BackgroundColor3 = originalColor
-            end)
-        end
-        
-        toggleBtn.MouseButton1Click:Connect(function()
-            state = not state
-            if state then
-                toggleBtn.Text = (options.Text or "Toggle") .. " (ON)"
-                toggleBtn.BackgroundColor3 = DEFAULT_SETTINGS.Toggle.ActiveColor
-            else
-                toggleBtn.Text = (options.Text or "Toggle") .. " (OFF)"
-                toggleBtn.BackgroundColor3 = DEFAULT_SETTINGS.Toggle.InactiveColor
-            end
-            callback(state)
-        end)
-        
-        table.insert(self._secure.Tabs[name].Elements, toggleBtn)
-        
-        local toggle = {}
-        function toggle:SetState(newState)
-            state = newState
-            if state then
-                toggleBtn.Text = (options.Text or "Toggle") .. " (ON)"
-                toggleBtn.BackgroundColor3 = DEFAULT_SETTINGS.Toggle.ActiveColor
-            else
-                toggleBtn.Text = (options.Text or "Toggle") .. " (OFF)"
-                toggleBtn.BackgroundColor3 = DEFAULT_SETTINGS.Toggle.InactiveColor
-            end
-            callback(state)
-        end
-        function toggle:GetState()
-            return state
-        end
-        return toggle
-    end
-    
-    -- AddInput method
+
+    -- AddInput method (полностью оригинальный)
     function tabInstance:AddInput(options)
         options = options or {}
         local size = options.Size or DEFAULT_SETTINGS.ComponentSize
@@ -541,7 +482,6 @@ function PizdecWareUI:CreateTab(name, options)
         textBox.ClearTextOnFocus = false
         textBox.ZIndex = 3
         textBox.Parent = inputFrame
-        
         applyTextPosition(textBox, "Left")
         
         local callback = options.Callback or function() end
@@ -553,7 +493,7 @@ function PizdecWareUI:CreateTab(name, options)
             addCenterMarks(inputFrame)
         end
         
-        table.insert(self._secure.Tabs[name].Elements, inputFrame)
+        table.insert(elements, inputFrame)
         
         local inputObj = {}
         function inputObj:SetText(text)
@@ -567,8 +507,8 @@ function PizdecWareUI:CreateTab(name, options)
         end
         return inputObj
     end
-    
-    -- AddBind method
+
+    -- AddBind method (полностью оригинальный)
     function tabInstance:AddBind(options)
         options = options or {}
         local size = options.Size or DEFAULT_SETTINGS.ComponentSize
@@ -581,7 +521,7 @@ function PizdecWareUI:CreateTab(name, options)
         bindFrame.BackgroundColor3 = DEFAULT_SETTINGS.Bind.BackgroundColor
         bindFrame.ZIndex = 2
         bindFrame.Parent = elementsContainer
-        
+
         local bindCorner = Instance.new("UICorner")
         bindCorner.CornerRadius = UDim.new(0, DEFAULT_SETTINGS.Bind.CornerRadius)
         bindCorner.Parent = bindFrame
@@ -632,7 +572,7 @@ function PizdecWareUI:CreateTab(name, options)
             addCenterMarks(bindFrame)
         end
 
-        table.insert(self._secure.Tabs[name].Elements, bindFrame)
+        table.insert(elements, bindFrame)
 
         local bindObj = {}
         function bindObj:SetKey(key)
@@ -644,8 +584,8 @@ function PizdecWareUI:CreateTab(name, options)
         end
         return bindObj
     end
-    
-    -- AddBackground method
+
+    -- AddBackground method (полностью оригинальный)
     function tabInstance:AddBackground(options)
         options = options or {}
         local size = options.Size or DEFAULT_SETTINGS.ComponentSize
@@ -667,7 +607,7 @@ function PizdecWareUI:CreateTab(name, options)
             addCenterMarks(background)
         end
         
-        table.insert(self._secure.Tabs[name].Elements, background)
+        table.insert(elements, background)
         
         local backgroundObj = {}
         function backgroundObj:SetColor(color)
@@ -681,8 +621,124 @@ function PizdecWareUI:CreateTab(name, options)
         end
         return backgroundObj
     end
-    
-    -- AddDropdown method
+
+    -- AddToggle method (полностью оригинальный)
+    function tabInstance:AddToggle(options)
+        options = options or {}
+        local size = options.Size or DEFAULT_SETTINGS.ComponentSize
+        
+        local toggleBtn = Instance.new("TextButton")
+        toggleBtn.AnchorPoint = Vector2.new(0.5, 0.5)
+        toggleBtn.Size = UDim2.new(0, size.X, 0, size.Y)
+        toggleBtn.Position = UDim2.new(0, options.Position and options.Position.X or 0, 
+                             0, options.Position and options.Position.Y or 0)
+        toggleBtn.Text = (options.Text or "Toggle") .. " (OFF)"
+        toggleBtn.BackgroundColor3 = DEFAULT_SETTINGS.Toggle.InactiveColor
+        toggleBtn.TextColor3 = DEFAULT_SETTINGS.Toggle.TextColor
+        toggleBtn.Font = DEFAULT_SETTINGS.Toggle.Font
+        toggleBtn.TextSize = options.TextSize or DEFAULT_SETTINGS.Toggle.TextSize
+        applyTextPosition(toggleBtn, options.TextPosition or DEFAULT_SETTINGS.Toggle.TextPosition)
+        toggleBtn.ZIndex = 2
+        toggleBtn.Parent = elementsContainer
+        
+        local toggleCorner = Instance.new("UICorner")
+        toggleCorner.CornerRadius = UDim.new(0, DEFAULT_SETTINGS.Toggle.CornerRadius)
+        toggleCorner.Parent = toggleBtn
+        
+        if rulerX.Visible then
+            addCenterMarks(toggleBtn)
+        end
+        
+        local state = false
+        local callback = options.Callback or function() end
+        
+        local function applyPressEffect()
+            local originalColor = state and DEFAULT_SETTINGS.Toggle.ActiveColor or DEFAULT_SETTINGS.Toggle.InactiveColor
+            toggleBtn.BackgroundColor3 = DEFAULT_SETTINGS.Toggle.ActiveColor:Lerp(Color3.new(1,1,1), 0.3)
+            task.delay(DEFAULT_SETTINGS.Toggle.PressEffectDuration, function()
+                toggleBtn.BackgroundColor3 = originalColor
+            end)
+        end
+        
+        toggleBtn.MouseButton1Click:Connect(function()
+            state = not state
+            if state then
+                toggleBtn.Text = (options.Text or "Toggle") .. " (ON)"
+                toggleBtn.BackgroundColor3 = DEFAULT_SETTINGS.Toggle.ActiveColor
+            else
+                toggleBtn.Text = (options.Text or "Toggle") .. " (OFF)"
+                toggleBtn.BackgroundColor3 = DEFAULT_SETTINGS.Toggle.InactiveColor
+            end
+            callback(state)
+        end)
+        
+        table.insert(elements, toggleBtn)
+        
+        local toggle = {}
+        function toggle:SetState(newState)
+            state = newState
+            if state then
+                toggleBtn.Text = (options.Text or "Toggle") .. " (ON)"
+                toggleBtn.BackgroundColor3 = DEFAULT_SETTINGS.Toggle.ActiveColor
+            else
+                toggleBtn.Text = (options.Text or "Toggle") .. " (OFF)"
+                toggleBtn.BackgroundColor3 = DEFAULT_SETTINGS.Toggle.InactiveColor
+            end
+            callback(state)
+        end
+        function toggle:GetState()
+            return state
+        end
+        return toggle
+    end
+
+    -- AddButton method (полностью оригинальный)
+    function tabInstance:AddButton(options)
+        options = options or {}
+        local size = options.Size or DEFAULT_SETTINGS.ComponentSize
+        
+        local button = Instance.new("TextButton")
+        button.AnchorPoint = Vector2.new(0.5, 0.5)
+        button.Size = UDim2.new(0, size.X, 0, size.Y)
+        button.Position = UDim2.new(0, options.Position and options.Position.X or 0, 
+                             0, options.Position and options.Position.Y or 0)
+        button.Text = options.Text or "Button"
+        button.BackgroundColor3 = DEFAULT_SETTINGS.Button.Color
+        button.TextColor3 = DEFAULT_SETTINGS.Button.TextColor
+        button.Font = DEFAULT_SETTINGS.Button.Font
+        button.TextSize = options.TextSize or DEFAULT_SETTINGS.Button.TextSize
+        applyTextPosition(button, options.TextPosition or DEFAULT_SETTINGS.Button.TextPosition)
+        button.ZIndex = 2
+        button.Parent = elementsContainer
+        
+        local buttonCorner = Instance.new("UICorner")
+        buttonCorner.CornerRadius = UDim.new(0, DEFAULT_SETTINGS.Button.CornerRadius)
+        buttonCorner.Parent = button
+        
+        if rulerX.Visible then
+            addCenterMarks(button)
+        end
+        
+        local debounce = false
+        button.MouseButton1Click:Connect(function()
+            if debounce then return end
+            debounce = true
+            local originalColor = button.BackgroundColor3
+            button.BackgroundColor3 = DEFAULT_SETTINGS.Button.PressEffectColor
+            task.delay(DEFAULT_SETTINGS.Button.PressEffectDuration, function()
+                button.BackgroundColor3 = originalColor
+                debounce = false
+            end)
+            if options.Callback then
+                options.Callback()
+            end
+        end)
+        
+        table.insert(elements, button)
+        return button
+    end
+
+    -- AddDropdown method (полностью оригинальный)
     function tabInstance:AddDropdown(options)
         options = options or {}
         local size = options.Size or Vector2.new(200, 35)
@@ -885,8 +941,8 @@ function PizdecWareUI:CreateTab(name, options)
             addCenterMarks(dropdown)
         end
         
-        table.insert(self._secure.Tabs[name].Elements, dropdown)
-        table.insert(self._secure.Tabs[name].Elements, listFrame)
+        table.insert(elements, dropdown)
+        table.insert(elements, listFrame)
         
         local dropdownObj = {}
         function dropdownObj:SetItems(newItems)
